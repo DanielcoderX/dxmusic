@@ -31,18 +31,19 @@ android {
     }
     signingConfigs {
         create("release") {
-            // Points directly to the default Windows Android home keystore location safely
-            val userHome = System.getProperty("user.home")
-            storeFile = file("$userHome/.android/debug.keystore")
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
+            val keystorePath = System.getenv("KEYSTORE_PATH")
+            if (keystorePath != null) {
+                storeFile = file(keystorePath)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
         }
     }
     buildTypes {
         getByName("release") {
-            // This will now find the "release" config we created above safely!
-            signingConfig = signingConfigs.getByName("release")
+            val keystorePath = System.getenv("KEYSTORE_PATH")
+            signingConfig = if (keystorePath != null) signingConfigs.getByName("release") else signingConfigs.getByName("debug")
             
             isMinifyEnabled = true
             isShrinkResources = true
