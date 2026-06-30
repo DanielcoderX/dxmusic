@@ -44,6 +44,10 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
 
+      - name: Fix pub-cache AndroidManifest.xml namespace issues
+        run: |
+          find ~/.pub-cache/hosted/pub.dev -name "AndroidManifest.xml" -exec sed -i 's/package="[^"]*"//g' {} +
+
       - name: Build APKs (Per-ABI & Universal)
         run: flutter build apk --release --split-per-abi
 
